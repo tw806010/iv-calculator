@@ -166,7 +166,7 @@
 </div>
 
 <script>
-// 這邊是原本 Python 的計算邏輯，已經完美轉換為 JavaScript 瀏覽器原生運算
+// 已經修正語法錯誤的乾淨計算邏輯
 function localCalculation() {
     const totalVolume = parseFloat(document.getElementById('volume').value);
     const totalHours = parseFloat(document.getElementById('hours').value);
@@ -191,8 +191,6 @@ function localCalculation() {
     // 3. 換算成幾秒滴一滴
     let secondsPerDrop = 0;
     if (gttPerMin > 0) {
-        secondsPerDrop = (60 / gttGttPerMin = gttPerMin).toFixed(1);
-        // 上面這行修正微調 JS 語法 Bug：
         secondsPerDrop = (60 / gttPerMin).toFixed(1);
     }
 
