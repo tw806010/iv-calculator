@@ -14,6 +14,9 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            /* 額外加入：禁止使用者在網頁上反白選取文字 */
+            user-select: none;
+            -webkit-user-select: none;
         }
         .card { 
             background: white; 
@@ -41,6 +44,9 @@
             border-radius: 6px; 
             font-size: 16px;
             background-color: #f8fafc;
+            /* 讓輸入框維持可以被選取，方便輸入數字 */
+            user-select: text;
+            -webkit-user-select: text;
         }
         input:focus, select:focus {
             outline: none;
@@ -155,26 +161,56 @@
     
     <!-- 免責聲明 -->
     <div class="notice">
-        <strong>免責聲明：</strong>本計算工具僅作為教學輔助使用，計算結果則務必依據病人狀況及醫院標準流程執行，相關臨床疑問請諮詢您的臨床指導教師或臨床護理人員。
+        <strong>免責聲明：</strong>本計算工具僅作為教學輔助使用，計算結果則務必依據病人狀況及醫院標準流程執行，相關臨床疑問請諮詢臨床指導教師或臨床護理人員。
     </div>
 
     <!-- 創作者資訊 -->
     <div class="creator-info">
         <strong>創作者資訊：</strong><br>
-        本工具由美和科技大學護理系學生 魏啟軒，使用JavaScript網頁技術製作而成。如有任何疑問或建議，歡迎來信 <a href="mailto:t41301106@go.meiho.edu.tw">t41301106@go.meiho.edu.tw</a> 。
+        本網頁由 美和科技大學護理系學生 魏啟軒，使用JavaScript網頁技術開發製作並維護管理。如有任何疑問或建議，歡迎來信 <a href="mailto:t41301106@go.meiho.edu.tw">t41301106@go.meiho.edu.tw</a> 。
         <div style="text-align: right; margin-top: 10px; color: #94a3b8; font-family: monospace;">
             Version 1.0 - 2026.07.08
         </div>
+    </div>
 </div>
 
 <script>
-// 已經修正語法錯誤的乾淨計算邏輯
+// 1. 網頁安全安全防護邏輯
+// 封鎖滑鼠右鍵
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+// 封鎖 F12 鍵以及常見的開發者工具組合快捷鍵
+document.addEventListener('keydown', function(e) {
+    // 阻擋 F12 (keyCode 123)
+    if (e.keyCode === 123) {
+        e.preventDefault();
+        return false;
+    }
+    // 阻擋 Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C (Windows) 
+    // 以及 Cmd+Opt+I / Cmd+Opt+J (Mac)
+    if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+        e.preventDefault();
+        return false;
+    }
+    if (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74)) {
+        e.preventDefault();
+        return false;
+    }
+    // 阻擋 Ctrl+U (檢視網頁原始碼)
+    if (e.ctrlKey && e.keyCode === 85) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// 2. 已經修正語法錯誤的乾淨計算邏輯
 function localCalculation() {
     const totalVolume = parseFloat(document.getElementById('volume').value);
     const totalHours = parseFloat(document.getElementById('hours').value);
     const dropFactor = parseInt(document.getElementById('factor').value);
 
-    // 防呆安全檢查
     if (isNaN(totalVolume) || isNaN(totalHours) || totalVolume <= 0 || totalHours <= 0) {
         document.getElementById('res_flow').innerText = "0";
         document.getElementById('res_gtt').innerText = "0";
@@ -182,21 +218,16 @@ function localCalculation() {
         return;
     }
 
-    // 1. 計算每小時流速 (mL/hr)
     const flowRateMlHr = (totalVolume / totalHours).toFixed(1);
-    
-    // 2. 精確計算每分鐘滴數 (gtt/min)
     const totalMinutes = totalHours * 60;
     const rawGttPerMin = (totalVolume * dropFactor) / totalMinutes;
-    const gttPerMin = Math.round(rawGttPerMin); // 四捨五入取整數
+    const gttPerMin = Math.round(rawGttPerMin); 
     
-    // 3. 換算成幾秒滴一滴
     let secondsPerDrop = 0;
     if (gttPerMin > 0) {
         secondsPerDrop = (60 / gttPerMin).toFixed(1);
     }
 
-    // 渲染更新到網頁畫面上
     document.getElementById('res_flow').innerText = flowRateMlHr;
     document.getElementById('res_gtt').innerText = gttPerMin;
     document.getElementById('res_sec').innerText = secondsPerDrop;
