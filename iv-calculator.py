@@ -1,3 +1,4 @@
+import math
 from flask import Flask, request, jsonify, render_template_string
 
 app = Flask(__name__)
@@ -171,7 +172,7 @@ HTML_TEMPLATE = """
     <!-- 創作者資訊 -->
     <div class="creator-info">
         <strong>創作者資訊：</strong><br>
-        本工具由美和科技大學護理系學生 魏啟軒，使用Python程式語言製作而成。如有任何疑問或建議，歡迎來信 <a href="mailto:t41301106@go.meiho.edu.tw">t41301106@go.meiho.edu.tw</a> 。
+        本網頁由 和科技大學護理系學生 魏啟軒，使用Python程式語言開發製作及維護管理。如有任何疑問或建議，歡迎來信 <a>href="mailto:t41301106@go.meiho.edu.tw">t41301106@go.meiho.edu.tw</a> 。
     </div>
 </div>
 
@@ -218,7 +219,6 @@ def index():
     return render_template_string(HTML_TEMPLATE)
 
 @app.route('/api/calculate', methods=['POST'])
-import math
 def calculate():
     try:
         data = request.get_json()
